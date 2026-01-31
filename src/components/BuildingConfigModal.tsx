@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 interface BuildingConfigModalProps {
@@ -32,46 +33,86 @@ export default function BuildingConfigModal({ isOpen, onClose }: BuildingConfigM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
-      {/* Sidebar */}
-      <div className="absolute right-0 top-0 bottom-0 w-[28vw] min-w-[320px] max-w-[450px] bg-white shadow-2xl flex flex-col animate-slide-in-right">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Building Configuratation</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/50" 
+            onClick={onClose} 
+          />
+          
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+            className="absolute right-0 top-0 bottom-0 w-[483px] max-w-full bg-[#FAFAFA] shadow-2xl flex flex-col"
           >
-            <X className="w-5 h-5 text-gray-600" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-6">
-          {towers.map((tower, idx) => (
-            <div key={idx} className="flex flex-col gap-3">
-              <h3 className="text-base font-semibold text-gray-900">{tower.name}</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-500">Total Floors</p>
-                  <p className="text-sm font-medium text-gray-900">{tower.totalFloors}</p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-500">Units</p>
-                  <p className="text-sm font-medium text-gray-900">{tower.units}</p>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <p className="text-xs text-gray-500">Configuration</p>
-                  <p className="text-sm font-medium text-gray-900">{tower.configuration}</p>
-                </div>
+            {/* Header */}
+            <div className="flex flex-col border-b border-[#E5E5E5]">
+              <div className="flex items-center justify-between px-[24px] py-[20px]">
+                <h2 className="font-archivo font-[500] text-[#262626] text-[20px] leading-[1.5]">
+                  Building Configuratation
+                </h2>
+                <button
+                  onClick={onClose}
+                  className="w-[30px] h-[30px] flex items-center justify-center rounded-[8px] bg-[#E5E5E5] hover:bg-[#D4D4D4] transition-colors cursor-pointer"
+                >
+                  <X className="w-[24px] h-[24px] text-[#262626]" />
+                </button>
               </div>
             </div>
-          ))}
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-[24px] py-[24px] flex flex-col gap-[24px]">
+              {towers.map((tower, idx) => (
+                <div key={idx}>
+                  <div className="flex flex-col gap-[12px]">
+                    <h3 className="font-archivo font-[600] text-[#262626] text-[18px] leading-[1.5]">
+                      {tower.name}
+                    </h3>
+                    <div className="flex gap-[12px]">
+                      {/* Total Floors */}
+                      <div className="flex-1 flex flex-col gap-[6px]">
+                        <p className="font-archivo font-[400] text-[#404040] text-[14px] leading-[1.5] tracking-[0.25px]">
+                          Total Floors
+                        </p>
+                        <p className="font-manrope font-[600] text-[#262626] text-[16px] leading-[1.5]">
+                          {tower.totalFloors}
+                        </p>
+                      </div>
+                      {/* Units */}
+                      <div className="flex-1 flex flex-col gap-[6px]">
+                        <p className="font-archivo font-[400] text-[#404040] text-[14px] leading-[1.5] tracking-[0.25px]">
+                          Units
+                        </p>
+                        <p className="font-manrope font-[600] text-[#262626] text-[16px] leading-[1.5]">
+                          {tower.units}
+                        </p>
+                      </div>
+                      {/* Configuration */}
+                      <div className="flex-1 flex flex-col gap-[6px]">
+                        <p className="font-archivo font-[400] text-[#404040] text-[14px] leading-[1.5] tracking-[0.25px]">
+                          Configuration
+                        </p>
+                        <p className="font-manrope font-[600] text-[#262626] text-[16px] leading-[1.5]">
+                          {tower.configuration}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {idx < towers.length - 1 && <div className="h-[1px] bg-[#E5E5E5] mt-[24px]" />}
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 }
+

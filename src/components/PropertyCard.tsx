@@ -21,6 +21,7 @@ interface PropertyCardProps {
 export default function PropertyCard({ property }: PropertyCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showIssuesModal, setShowIssuesModal] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -36,7 +37,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <>
-      <div className="w-[311px] flex-shrink-0 flex flex-col gap-2.5 cursor-pointer group bg-white h-full">
+      <div className="w-72 md:w-80 flex-shrink-0 flex flex-col gap-2.5 cursor-pointer group bg-white h-full">
       <div className="w-full aspect-[4/3] rounded-lg relative overflow-hidden p-2 flex flex-col justify-between">
         <Image
           src={property.images[currentImageIndex]}
@@ -54,15 +55,18 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                   <path d="M12 6v6l4 2"/>
                 </svg>
               </div>
-              <span className="text-xs font-medium text-gray-50 whitespace-nowrap leading-[1.5]">80% Matched</span>
+              <span className="text-xs font-[500] text-gray-50 whitespace-nowrap leading-[1.5]">80% Matched</span>
             </div>
             <div className="flex items-center gap-1 bg-black/60 px-2 py-0.5 rounded-full">
               <Eye className="w-5 h-5 text-gray-50" />
-              <span className="text-xs font-medium text-gray-50 leading-[1.5]">Seen</span>
+              <span className="text-xs font-[500] text-gray-50 leading-[1.5]">Seen</span>
             </div>
           </div>
-          <button className="w-8 h-8 bg-black/40 rounded-md flex items-center justify-center hover:bg-black/60 transition-colors cursor-pointer">
-            <Heart className="w-5 h-5 text-gray-50" />
+          <button 
+            onClick={(e) => { e.stopPropagation(); setIsLiked(!isLiked); }}
+            className="w-8 h-8 bg-black/40 rounded-md flex items-center justify-center hover:bg-black/60 transition-colors cursor-pointer"
+          >
+            <Heart className={`w-5 h-5 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-50'}`} />
           </button>
         </div>
 
@@ -71,7 +75,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {false && (
               <div className="flex items-center gap-1 bg-gray-200 px-2 py-0.5 rounded-full">
                 <HardHat className="w-5 h-5 text-gray-800" />
-                <span className="text-xs font-semibold text-gray-800 leading-[1.5]">Builder Unit</span>
+                <span className="text-xs font-[600] text-gray-800 leading-[1.5]">Builder Unit</span>
               </div>
             )}
             <button 
@@ -79,7 +83,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               className="flex items-center gap-1 bg-rose-200 px-2 py-0.5 rounded-full backdrop-blur-sm cursor-pointer hover:bg-rose-300 transition-colors"
             >
               <AlertTriangle className="w-6 h-6 text-rose-800" />
-              <span className="text-[10px] font-bold text-rose-800 text-center leading-[1.5]">3 Issues</span>
+              <span className="text-[10px] font-[700] text-rose-800 text-center leading-[1.5]">3 Issues</span>
             </button>
           </div>
           <div className="flex gap-1">
@@ -99,16 +103,16 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div>
           <div className="flex flex-col gap-0.5 mb-2.5">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-gray-700 text-base truncate flex-1 leading-[1.5]">{property.name}</h3>
+              <h3 className="font-[700] text-gray-700 text-base truncate flex-1 leading-[1.5]">{property.name}</h3>
               {property.rera && (
                 <div className="flex items-center gap-1 bg-blue-100 px-2 py-0.5 rounded-full ml-2">
                   <ShieldCheck className="w-4 h-4 text-blue-800" />
-                  <span className="text-xs font-semibold text-blue-800 leading-[1.5]">RERA</span>
+                  <span className="text-xs font-[600] text-blue-800 leading-[1.5]">RERA</span>
                 </div>
               )}
             </div>
-            <p className="text-sm font-medium text-gray-700 truncate h-[21px] leading-[1.5]">
-              <span className="font-bold text-gray-800">{property.bhk}</span>
+            <p className="text-sm font-[500] text-gray-700 truncate leading-[1.5] h-5">
+              <span className="font-[700] text-gray-800">{property.bhk}</span>
               {" "}BHKs for sale in Devanhalli
             </p>
           </div>
@@ -120,15 +124,15 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           <div className="flex items-center justify-between min-h-[2rem] gap-2">
             <div className="flex items-center gap-1.5 min-w-0">
               <Scale className="w-5 h-5 text-gray-500 shrink-0" />
-              <span className="text-sm font-medium text-gray-700 truncate leading-[1.5] whitespace-nowrap">{property.area}</span>
+              <span className="text-sm font-[500] text-gray-700 truncate leading-[1.5] whitespace-nowrap">{property.area}</span>
             </div>
             <div className="flex items-center gap-1.5 min-w-0 justify-end">
               <Building className="w-5 h-5 text-gray-500 shrink-0" />
-              <span className="text-sm font-medium text-gray-700 leading-[1.5] whitespace-nowrap">{property.status}</span>
+              <span className="text-sm font-[500] text-gray-700 leading-[1.5] whitespace-nowrap">{property.status}</span>
             </div>
           </div>
           
-          <div className="flex items-center justify-between text-xs font-normal text-gray-700 leading-[1.5]">
+          <div className="flex items-center justify-between text-xs font-[400] text-gray-700 leading-[1.5]">
             <span className="whitespace-nowrap">Updated on: Dec 2025</span>
             <span className="text-right whitespace-nowrap">Possession by: Oct 2032</span>
           </div>

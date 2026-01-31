@@ -5,7 +5,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import UnitCard from "./UnitCard";
 
 const tabs = ["Apartments", "Plots", "Villas", "Row Houses", "Villaments"];
-const bhkOptions = ["Studio", "1 BHK", "2 BHK", "3 BHK"];
+
+// BHK options based on property type
+const bhkOptionsByTab: Record<string, string[]> = {
+  "Apartments": ["Studio", "1 BHK", "2 BHK", "3 BHK"],
+  "Villas": ["4 BHK", "5 BHK"],
+  "Row Houses": ["4 BHK", "5 BHK"],
+  "Plots": ["1200 Sqft", "1300 Sqft", "1400 Sqft"],
+  "Villaments": ["4 BHK", "5 BHK"],
+};
 
 const units = [
   { bhk: "1 BHK", price: "₹85 Lac", pricePerSqft: "₹12,000 /Sqft", sbua: "800 Sqft", carpetArea: "400 Sqft", parking: "3" },
@@ -21,10 +29,28 @@ export default function UnitPlansSection({ className, ...props }: React.HTMLAttr
   const [currentPage, setCurrentPage] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Get current BHK options based on active tab
+  const currentBhkOptions = bhkOptionsByTab[activeTab] || [];
+
+  // Update activeBHK when tab changes
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const newOptions = bhkOptionsByTab[tab] || [];
+    if (newOptions.length > 0) {
+      setActiveBHK(newOptions[0]);
+    }
+  };
+
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 400;
-      scrollContainerRef.current.scrollBy({
+      const container = scrollContainerRef.current;
+      const firstCard = container.firstElementChild as HTMLElement;
+      if (!firstCard) return;
+      
+      const gap = parseInt(window.getComputedStyle(container).gap || "0");
+      const scrollAmount = firstCard.clientWidth + gap;
+      
+      container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
@@ -34,112 +60,123 @@ export default function UnitPlansSection({ className, ...props }: React.HTMLAttr
   const handleScroll = () => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
+      const firstCard = container.firstElementChild as HTMLElement;
+      if (!firstCard) return;
+
+      const cardWidth = firstCard.clientWidth;
+      const gap = parseInt(window.getComputedStyle(container).gap || "0");
       const scrollLeft = container.scrollLeft;
-      const cardWidth = 350; // Approximate card width
-      const gap = 20; // Gap between cards
+      
       const page = Math.round(scrollLeft / (cardWidth + gap));
-      setCurrentPage(Math.min(Math.max(page, 0), 3));
+      setCurrentPage(Math.min(Math.max(page, 0), units.length - 1));
     }
   };
 
   return (
-    <div className={`w-full flex flex-col gap-[28px] ${className || ""}`} {...props}>
-      <h2 className="font-archivo font-semibold text-[#262626] text-[24px] leading-[1.5] md:text-left text-center">
+    <div className={`w-full flex flex-col gap-5 md:gap-7 ${className || ""}`} {...props}>
+      <h2 className="font-archivo font-[600] text-[#262626] text-xl md:text-2xl leading-[1.5] text-left">
         Unit Plans
       </h2>
 
-      <div className="w-full flex flex-col">
-        <div className="w-full flex flex-col items-start gap-[1px]">
-          <div className="w-full flex gap-6 overflow-x-auto scrollbar-hide border-b border-[#e5e5e5]">
+      <div className="w-full flex flex-col gap-5">
+        <div className="w-full flex flex-col gap-[1px]">
+          <div className="w-full flex gap-6 overflow-x-auto scrollbar-hide border-b border-[#E5E5E5]">
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-[16px] px-[10px] gap-[10px] font-manrope leading-[1.5] whitespace-nowrap transition-colors text-[16px] ${
+                onClick={() => handleTabChange(tab)}
+                className={`pb-4 px-2.5 gap-2.5 font-manrope leading-[1.5] whitespace-nowrap transition-colors text-base ${
                   activeTab === tab
-                    ? "font-bold text-[#262626] border-b-2 border-[#262626]"
-                    : "font-medium text-[#525252]"
+                    ? "font-[700] text-[#262626] border-b-2 border-[#262626]"
+                    : "font-[500] text-[#525252]"
                 }`}
               >
                 {tab}
               </button>
             ))}
           </div>
+          
+          <div className="flex flex-wrap gap-2 bg-[#F3E8FF] rounded-[0_0_12px_12px] p-4 md:px-5">
+            <div className="flex flex-wrap gap-3">
+              {currentBhkOptions.map((bhk) => (
+                <button
+                  key={bhk}
+                  onClick={() => setActiveBHK(bhk)}
+                  className={`px-3 py-2 rounded-lg font-manrope font-[600] leading-[1.5] whitespace-nowrap transition-all text-sm ${
+                    activeBHK === bhk
+                      ? "border border-[#262626] bg-[#F5F5F5] text-[#262626]"
+                      : "border border-[#D4D4D4] bg-[#FAFAFA] text-[#525252]"
+                  }`}
+                >
+                  {bhk}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-[8px] bg-[#F3E8FF] rounded-[0_0_12px_12px] p-[16px_20px]">
-          {bhkOptions.map((bhk) => (
+        <div className="w-full flex items-center justify-between">
+          <div className="flex items-center gap-3 flex-1 text-[#525252] font-manrope font-[500] text-sm leading-[150%]">
+            <span>24 Units</span>
+            <div className="w-[1px] bg-[#D4D4D4] h-4" />
+            <span>1,200-2,400 Sqft</span>
+          </div>
+          <div className="hidden md:flex gap-4">
             <button
-              key={bhk}
-              onClick={() => setActiveBHK(bhk)}
-              className={`px-[12px] py-[8px] gap-[8px] rounded-[8px] font-manrope leading-[1.5] whitespace-nowrap transition-all text-[14px] ${
-                activeBHK === bhk
-                  ? "border-[1.5px] border-[#262626] bg-[#F5F5F5] font-semibold text-[#262626]"
-                  : "border-[1.5px] border-[#D4D4D4] bg-[#FAFAFA] font-medium text-[#525252]"
-              }`}
+              onClick={() => scroll("left")}
+              className="w-[30px] h-[30px] p-2 bg-[#E5E5E5] border-0 rounded-lg flex items-center justify-center hover:bg-[#D4D4D4] transition-colors"
             >
-              {bhk}
+              <ChevronLeft className="w-[14px] h-[14px] text-[#262626]" />
             </button>
+            <button
+              onClick={() => scroll("right")}
+              className="w-[30px] h-[30px] p-2 bg-[#E5E5E5] border-0 rounded-lg flex items-center justify-center hover:bg-[#D4D4D4] transition-colors"
+            >
+              <ChevronRight className="w-[14px] h-[14px] text-[#262626]" />
+            </button>
+          </div>
+        </div>
+
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="w-full flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-5"
+        >
+          {units.map((unit, idx) => (
+            <div key={idx} className="snap-start shrink-0">
+              <UnitCard unit={unit} />
+            </div>
           ))}
         </div>
-      </div>
 
-      <div className="w-full flex items-center justify-between">
-        <div className="flex items-center gap-[12px] flex-1 text-[#525252] font-manrope font-medium text-[14px] leading-[150%]">
-          <span>24 Units</span>
-          <div className="w-[1px] bg-[#D4D4D4] h-[16px]" />
-          <span>1,200-2,400 Sqft</span>
+        <div className="w-full flex lg:hidden items-center justify-center gap-1">
+          {units.map((_, page) => (
+            <button
+              key={page}
+              onClick={() => {
+                if (scrollContainerRef.current) {
+                  const container = scrollContainerRef.current;
+                  const firstCard = container.firstElementChild as HTMLElement;
+                  if (firstCard) {
+                     const cardWidth = firstCard.clientWidth;
+                     const gap = parseInt(window.getComputedStyle(container).gap || "0");
+                     const targetScroll = page * (cardWidth + gap);
+                     container.scrollTo({
+                       left: targetScroll,
+                       behavior: "smooth"
+                     });
+                     setCurrentPage(page);
+                  }
+                }
+              }}
+              className={`h-1 rounded-full transition-all ${
+                currentPage === page ? "bg-[#262626] w-6" : "bg-[#D4D4D4] w-2"
+              }`}
+            />
+          ))}
         </div>
-        <div className="hidden md:flex gap-[clamp(0.5rem,1.5vw,1rem)]">
-          <button
-            onClick={() => scroll("left")}
-            className="bg-gray-200 border-0 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors w-[clamp(1.75rem,3.5vw,1.875rem)] h-[clamp(1.75rem,3.5vw,1.875rem)] p-[clamp(0.375rem,1vw,0.5rem)]"
-          >
-            <ChevronLeft className="w-[clamp(1rem,2.5vw,1.5rem)] h-[clamp(1rem,2.5vw,1.5rem)]" />
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            className="bg-gray-200 border-0 rounded-lg flex items-center justify-center hover:bg-gray-300 transition-colors w-[clamp(1.75rem,3.5vw,1.875rem)] h-[clamp(1.75rem,3.5vw,1.875rem)] p-[clamp(0.375rem,1vw,0.5rem)]"
-          >
-            <ChevronRight className="w-[clamp(1rem,2.5vw,1.5rem)] h-[clamp(1rem,2.5vw,1.5rem)]" />
-          </button>
-        </div>
-      </div>
-
-      <div
-        ref={scrollContainerRef}
-        onScroll={handleScroll}
-        className="w-full flex overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory gap-[32px]"
-      >
-        {units.map((unit, idx) => (
-          <div key={idx} className="snap-start shrink-0">
-            <UnitCard unit={unit} />
-          </div>
-        ))}
-      </div>
-
-      <div className="w-full flex md:hidden items-center justify-center gap-[clamp(0.125rem,0.3vw,0.15rem)]">
-        {[0, 1, 2, 3, 4].map((page) => (
-          <button
-            key={page}
-            onClick={() => {
-              if (scrollContainerRef.current) {
-                const cardWidth = 292;
-                const gap = 18;
-                const targetScroll = page * (cardWidth + gap);
-                scrollContainerRef.current.scrollTo({
-                  left: targetScroll,
-                  behavior: "smooth"
-                });
-                setCurrentPage(page);
-              }
-            }}
-            className={`rounded-full transition-all w-[clamp(0.45rem,1.2vw,0.5rem)] h-[clamp(0.45rem,1.2vw,0.5rem)] ${
-              currentPage === page ? "bg-gray-800" : "bg-gray-300"
-            }`}
-          />
-        ))}
       </div>
     </div>
   );
 }
+

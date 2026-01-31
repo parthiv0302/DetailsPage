@@ -10,15 +10,15 @@ const features = [
 export default function PropertyFeaturesRow({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={className} {...props}>
-      <div className="hidden md:flex flex-wrap gap-y-[16px] gap-x-[28px] items-center content-center w-full">
+      <div className="hidden lg:flex flex-wrap gap-y-4 gap-x-7 items-center content-center w-full">
         {features.map((feature, idx) => (
-          <div key={idx} className="flex items-center gap-[0.625rem] whitespace-nowrap">
+          <div key={idx} className="flex items-center gap-2.5 whitespace-nowrap">
             {feature.isCustom ? (
-              <Image src={feature.icon as string} alt="" width={24} height={24} className="w-[1.5rem] h-[1.5rem]" />
+              <Image src={feature.icon as string} alt="" width={24} height={24} className="w-6 h-6" />
             ) : (
-              <feature.icon className="w-[1.5rem] h-[1.5rem] text-gray-800" />
+              <feature.icon className="w-6 h-6 text-gray-800" />
             )}
-            <p className="text-[1.125rem] font-medium text-[#262626] leading-[1.5] font-manrope">
+            <p className="text-lg font-[500] text-[#262626] leading-[1.5] font-manrope">
               {feature.label}
               {feature.hasAsterisk && <span className="text-rose-700">*</span>}
             </p>
@@ -26,15 +26,17 @@ export default function PropertyFeaturesRow({ className, ...props }: React.HTMLA
         ))}
       </div>
 
-      <div className="md:hidden grid grid-cols-3 w-full gap-[22px] max-w-[358px]">
+      <div className="hidden md:hidden lg:hidden" />
+
+      <div className="md:hidden grid grid-cols-3 w-full gap-6 max-w-sm">
         {features.map((feature, idx) => (
-          <div key={idx} className="flex flex-col gap-[8px] min-w-0">
+          <div key={idx} className="flex flex-col gap-2 min-w-0">
             {feature.isCustom ? (
-              <Image src={feature.icon as string} alt="" width={24} height={24} className="shrink-0 w-[24px] h-[24px]" />
+              <Image src={feature.icon as string} alt="" width={24} height={24} className="shrink-0 w-6 h-6" />
             ) : (
-              <feature.icon className="text-gray-800 shrink-0 w-[24px] h-[24px]" />
+              <feature.icon className="text-gray-800 shrink-0 w-6 h-6" />
             )}
-            <p className="font-manrope font-medium text-[#262626] leading-[1.5] text-[16px]">
+            <p className="font-manrope font-[500] text-[#262626] leading-[1.5] text-base">
               {feature.label}
               {feature.hasAsterisk && <span className="text-rose-700">*</span>}
             </p>

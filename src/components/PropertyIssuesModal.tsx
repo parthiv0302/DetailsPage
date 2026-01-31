@@ -1,13 +1,22 @@
 "use client";
 
-import { X, ExternalLink, FileText, Shield, Scale, Home } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ExternalLink, FileText, Shield, Scale, Home, LucideIcon } from "lucide-react";
 
 interface PropertyIssuesModalProps {
   isOpen: boolean;
   onClose: () => void;
+  towerName?: string;
 }
 
-const issues = [
+interface Issue {
+  title: string;
+  description: string;
+  status: "clear" | "issue";
+  icon: LucideIcon;
+}
+
+const issues: Issue[] = [
   {
     title: "Commencement Certificate",
     description: "Confirms the project is legally approved to start construction as.",
@@ -34,66 +43,116 @@ const issues = [
   },
 ];
 
-export default function PropertyIssuesModal({ isOpen, onClose }: PropertyIssuesModalProps) {
-  if (!isOpen) return null;
+function IssueCard({ issue }: { issue: Issue }) {
+  const isClear = issue.status === "clear";
+  const bgColor = isClear ? "bg-[#DCF8E7]" : "bg-[#FFE4E6]";
+  const iconColor = isClear ? "text-[#166534]" : "text-[#BE123C]";
+  const Icon = issue.icon;
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
-      {/* Sidebar */}
-      <div className="absolute right-0 top-0 bottom-0 w-[28vw] min-w-[320px] max-w-[450px] bg-white shadow-2xl flex flex-col animate-slide-in-right">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Assetz 63 Degree East - Tower A</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5 text-gray-600" />
-          </button>
+    <div className={`flex items-center gap-4 px-5 py-4 rounded-lg ${bgColor}`}>
+      <Icon className={`w-6 h-6 ${iconColor} shrink-0`} />
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="flex items-start justify-between">
+          <h3 className="font-archivo font-[500] text-[#262626] text-base leading-[1.5] tracking-[0.25px]">
+            {issue.title}
+          </h3>
+          <ExternalLink className="w-6 h-6 text-[#525252] cursor-pointer hover:text-[#262626] transition-colors shrink-0" />
         </div>
-
-        {/* Filter Buttons */}
-        <div className="px-6 pt-4 flex gap-2">
-          <button className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full border border-green-300">
-            Clear
-          </button>
-          <button className="px-3 py-1 bg-rose-100 text-rose-700 text-xs font-medium rounded-full border border-rose-300">
-            Have Issues
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-3">
-          {issues.map((issue, idx) => (
-            <div
-              key={idx}
-              className={`flex items-start gap-3 p-4 rounded-lg border ${
-                issue.status === "clear"
-                  ? "bg-green-50 border-green-200"
-                  : "bg-rose-50 border-rose-200"
-              }`}
-            >
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                issue.status === "clear" ? "bg-green-100" : "bg-rose-100"
-              }`}>
-                <issue.icon className={`w-5 h-5 ${
-                  issue.status === "clear" ? "text-green-700" : "text-rose-700"
-                }`} />
-              </div>
-              <div className="flex-1 flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-gray-900">{issue.title}</h3>
-                  <ExternalLink className="w-4 h-4 text-gray-600 cursor-pointer" />
-                </div>
-                <p className="text-xs text-gray-600">{issue.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <p className="font-manrope font-[500] text-[#525252] text-sm leading-[1.5]">
+          {issue.description}
+        </p>
       </div>
     </div>
   );
 }
+
+export default function PropertyIssuesModal({ 
+  isOpen, 
+  onClose, 
+  towerName = "Assetz 63 Degree East - Tower A" 
+}: PropertyIssuesModalProps) {
+  if (!isOpen) return null;
+
+  const clearIssues = issues.filter(i => i.status === "clear");
+  const haveIssues = issues.filter(i => i.status === "issue");
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/50 md:block hidden" 
+            onClick={onClose} 
+          />
+          
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+            className="absolute right-0 top-0 bottom-0 w-full md:w-[483px] max-w-full bg-[#FAFAFA] shadow-2xl flex flex-col"
+          >
+            {/* Header - Mobile */}
+            <div className="md:hidden flex flex-col border-b border-[#E5E5E5]">
+              <div className="flex items-center gap-2 px-4 py-3 h-16">
+                <button
+                  onClick={onClose}
+                  className="shrink-0"
+                >
+                  <ArrowLeft className="w-6 h-6 text-[#262626]" />
+                </button>
+                <h2 className="flex-1 font-archivo font-[500] text-[#262626] text-lg leading-[1.5]">
+                  {towerName}
+                </h2>
+              </div>
+            </div>
+
+            {/* Header - Desktop */}
+            <div className="hidden md:flex flex-col border-b border-[#E5E5E5]">
+              <div className="flex items-center justify-between px-6 py-5">
+                <h2 className="font-archivo font-[500] text-[#262626] text-xl leading-[1.5]">
+                  {towerName}
+                </h2>
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#E5E5E5] transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-[18px] h-[18px] text-[#525252]" />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-5 flex flex-col gap-6">
+              {/* Filter Buttons */}
+              <div className="flex gap-2.5">
+                <button className="px-4 py-1.5 bg-[#DCF8E7] rounded-full">
+                  <span className="font-manrope font-[600] text-[#262626] text-xs leading-[1.5]">Clear</span>
+                </button>
+                <button className="px-4 py-1.5 bg-[#FFE4E6] rounded-full">
+                  <span className="font-manrope font-[600] text-[#262626] text-xs leading-[1.5]">Have Issues</span>
+                </button>
+              </div>
+
+              {/* Issues List */}
+              <div className="flex flex-col gap-[18px]">
+                {clearIssues.map((issue, idx) => (
+                  <IssueCard key={idx} issue={issue} />
+                ))}
+                {haveIssues.map((issue, idx) => (
+                  <IssueCard key={idx} issue={issue} />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+

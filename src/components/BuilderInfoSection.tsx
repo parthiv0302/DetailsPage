@@ -10,37 +10,20 @@ const builders = [
 
 export default function BuilderInfoSection() {
   return (
-    <div className="flex flex-col w-full gap-[clamp(1.125rem,3vw,1.75rem)]">
-      {/* Title */}
-      <h2 
-        className="font-archivo font-semibold text-[#262626] leading-[1.5] text-[clamp(1.25rem,4vw,1.5rem)]"
-      >
+    <div className="flex flex-col w-full gap-5 md:gap-7">
+      <h2 className="font-archivo font-[600] text-[#262626] leading-[1.5] text-xl md:text-2xl">
         About Sattva Group
       </h2>
 
-      {/* Desktop/Tablet: 5 columns in one row | Mobile: 2 columns with row wrapping */}
-      <div 
-        className="grid grid-cols-2 md:grid-cols-5 w-full gap-[clamp(0.75rem,2vw,1rem)]"
-      >
+      <div className="grid grid-cols-2 md:grid-cols-5 w-full gap-3 md:gap-4">
         {builders.map((builder, index) => (
-          <div 
-            key={index} 
-            className="flex flex-col gap-1"
-          >
-            {/* Label */}
-            <p 
-              className="font-archivo font-normal text-[#404040] leading-[1.5] tracking-[0.25px] text-[clamp(0.7rem,1.5vw,0.813rem)] whitespace-nowrap"
-            >
+          <div key={index} className="flex flex-col gap-1">
+            <p className="font-archivo font-[400] text-[#404040] leading-[1.5] tracking-[0.25px] text-xs md:text-sm whitespace-nowrap">
               {builder.label}
             </p>
             
-            {/* Icon + Name */}
-            <div 
-              className="flex items-center w-full gap-2"
-            >
-              <p 
-                className="flex-1 font-manrope font-semibold text-[#262626] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap text-[clamp(0.875rem,2.5vw,1rem)]"
-              >
+            <div className="flex items-center w-full gap-2">
+              <p className="flex-1 font-manrope font-[600] text-[#262626] leading-[1.5] overflow-hidden text-ellipsis whitespace-nowrap text-sm md:text-base">
                 {builder.name}
               </p>
             </div>
@@ -50,3 +33,4 @@ export default function BuilderInfoSection() {
     </div>
   );
 }
+

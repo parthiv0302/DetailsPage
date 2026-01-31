@@ -21,16 +21,17 @@ export default function MobileMapButton() {
     <button 
       type="button"
       onClick={scrollToLocality}
-      className="md:hidden w-full rounded-lg overflow-hidden border border-gray-200 relative bg-[#F5F5F5] h-[84px] flex items-center justify-center gap-[7px] cursor-pointer mb-[36px] z-10"
+      className="md:hidden w-full rounded-lg overflow-hidden border border-gray-200 relative bg-[#F5F5F5] h-20 flex items-center justify-center gap-2 cursor-pointer mb-9 z-10"
     >
       <Image 
         src="/mapicon.svg" 
         alt="Map" 
         width={20} 
         height={20} 
-        className="w-[20px] h-[20px] pointer-events-none" 
+        className="w-5 h-5 pointer-events-none" 
       />
-      <span className="font-archivo font-semibold text-[#404040] leading-[1.2] text-[14px] tracking-[0.25px] pointer-events-none">View on Map</span>
+      <span className="font-archivo font-[600] text-[#404040] leading-[1.2] text-sm tracking-[0.25px] pointer-events-none">View on Map</span>
     </button>
   );
 }
+

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { X, CircleParking } from "lucide-react";
 
@@ -30,15 +31,30 @@ export default function AmenitiesModal({ isOpen, onClose }: AmenitiesModalProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
-      {/* Sidebar */}
-      <div className="absolute right-0 top-0 bottom-0 w-[28vw] min-w-[320px] max-w-[450px] bg-white shadow-2xl flex flex-col animate-slide-in-right">
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50">
+          {/* Overlay */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="absolute inset-0 bg-black/50" 
+            onClick={onClose} 
+          />
+          
+          {/* Sidebar */}
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+            className="absolute right-0 top-0 bottom-0 w-[28vw] min-w-[20rem] max-w-md bg-white shadow-2xl flex flex-col"
+          >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Amenities</h2>
+          <h2 className="text-lg font-[600] text-gray-900">Amenities</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -68,7 +84,10 @@ export default function AmenitiesModal({ isOpen, onClose }: AmenitiesModalProps)
             ))}
           </div>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }
+

@@ -69,15 +69,21 @@ const properties = [
   },
 ];
 
-export default function SimilarPropertiesSection() {
+export default function SimilarPropertiesSection({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const [activeFilter, setActiveFilter] = useState("Builder Unit");
   const [currentPage, setCurrentPage] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 350;
-      scrollContainerRef.current.scrollBy({
+      const container = scrollContainerRef.current;
+      const firstCard = container.firstElementChild as HTMLElement;
+      if (!firstCard) return;
+
+      const gap = parseInt(window.getComputedStyle(container).gap || "0");
+      const scrollAmount = firstCard.clientWidth + gap;
+      
+      container.scrollBy({
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
@@ -88,9 +94,13 @@ export default function SimilarPropertiesSection() {
     const handleScroll = () => {
       if (scrollContainerRef.current) {
         const container = scrollContainerRef.current;
-        const cardWidth = 311; // Card width from Figma
-        const gap = 20; // Gap between cards
+        const firstCard = container.firstElementChild as HTMLElement;
+        if (!firstCard) return;
+
+        const cardWidth = firstCard.clientWidth;
+        const gap = parseInt(window.getComputedStyle(container).gap || "0");
         const scrollLeft = container.scrollLeft;
+        
         const page = Math.round(scrollLeft / (cardWidth + gap));
         setCurrentPage(page);
       }
@@ -106,10 +116,10 @@ export default function SimilarPropertiesSection() {
   const totalPages = properties.length;
 
   return (
-    <div className="flex flex-col w-full bg-white gap-[clamp(1rem,2.5vw,1.5rem)]">
+    <div className={`flex flex-col w-full bg-white gap-4 md:gap-6 ${className || ""}`} {...props}>
       <div className="flex items-center justify-between">
         <h2 
-          className="font-semibold text-[#262626] leading-[1.5] font-archivo text-[length:clamp(1.25rem,4vw,1.5rem)]"
+          className="font-[600] text-[#262626] leading-[1.5] font-archivo text-xl md:text-2xl"
         >
           Similar properties
         </h2>
@@ -119,7 +129,7 @@ export default function SimilarPropertiesSection() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`rounded-lg font-semibold transition-all font-manrope text-base leading-[1.5] px-4 py-3 gap-2 ${
+              className={`rounded-lg font-[600] transition-all font-manrope text-base leading-[1.5] px-4 py-3 gap-2 ${
                 activeFilter === filter
                   ? "bg-[#f5f5f5] border-[1.5px] border-[#262626] text-[#262626]"
                   : "border-[1.5px] border-[#d4d4d4] text-[#525252] hover:border-gray-400"
@@ -145,12 +155,12 @@ export default function SimilarPropertiesSection() {
         </div>
       </div>
 
-      <div className="flex md:hidden items-center gap-[clamp(0.875rem,2vw,1rem)]">
+      <div className="flex md:hidden items-center gap-3">
         {filters.map((filter) => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`rounded-lg font-semibold transition-all font-manrope text-[length:clamp(0.875rem,2vw,1rem)] leading-[1.5] p-[clamp(0.625rem,1.5vw,0.75rem)_clamp(0.875rem,2.5vw,1rem)] gap-[clamp(0.375rem,1vw,0.5rem)] ${
+            className={`rounded-lg font-[600] transition-all font-manrope text-sm leading-[1.5] px-3 py-2 gap-2 ${
               activeFilter === filter
                 ? "bg-[#f5f5f5] border-[1.5px] border-[#262626] text-[#262626]"
                 : "border-[1.5px] border-[#d4d4d4] text-[#525252]"
@@ -163,7 +173,7 @@ export default function SimilarPropertiesSection() {
 
       <div
         ref={scrollContainerRef}
-        className="flex overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none gap-[clamp(1rem,2.5vw,1.25rem)]"
+        className="flex overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none gap-4 md:gap-5"
       >
         {properties.map((property, idx) => (
           <div key={idx} className="snap-start md:snap-align-none h-full">
